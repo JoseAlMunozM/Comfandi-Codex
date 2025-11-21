@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  phobos-api:
+    image: phobos
+    build: .
+    ports:
+      - "8080:8080"
+      - "5432:5432"
+    restart: always
+    environment:
+      ALLUSERSPROFILE: "C:\\ProgramData"
+      ANDROID_HOME: "C:\\Users\\carlos.robledo\\AppData\\Local\\Android\\Sdk"
+      APIKEY_PERSONAS: "1fb24a6a02b6ad8cec4aa79d005346e9c4d591d4da238fc0fc0d05599"
+      APPDATA: "C:\\Users\\carlos.robledo\\AppData\\Roaming"
+      BASE_URL_COMFANDI: "https://creactivatecomfandi.com/"
+      BASE_URL_FOMENTO: "https://api.empresarialMpac.comfandi.com.co/"
+      BASE_URL_JOBS: "https://autogestionsubsidio.api.comfandi.com.co"
+      BASE_URL_PERSONAS: "https://api-empresarialmpac.comfandi.com.co"
+      BASE_URL_SUBSIDIO: "https://autogestionsubsidio.api.comfandi.com.co"
+      DB_PASSWORD: "admin"
+      DB_URL: "jdbc:postgresql://host.docker.internal:5432/cuentas_cobro"
+      DB_USERNAME: "postgres"
+      FILE_EMAIL_NOTIFICATION: "pastorbetancourt@comfandi.com.co"
+      FILE_EMAIL_NOTOFICATION: "diego.perez@olsoftware.com"
+      JAVA_HOME: "C:\\Program Files\\Java\\jdk-21"
+      KORLON_BASE_URL: "https://api.cuentasdecobro.comfandi.com.co/api/v1/"
+      MAVEN_HOME: "C:\\Program Files\\apache-maven-3.9.11"
+      KORLON_USER_NAME: "comfandiAuthUser"
+      KORLON_USER_PASSWORD: "yrerg*4534fm"
+      BASIC_AUTH_USER: "comfandiAuthUser"
+      BASIC_AUTH_PASSWORD: "yrerg*4534fm"
+      USER_SUBSIDIO: "cuentasdecobro"
+      PASS_SUBSIDIO: "$3rtgf&765@**"
+      USER_COMFANDI: "cfd_user_api"
+      PASS_COMFANDI: "D6<r8@8r%g^1E+s"

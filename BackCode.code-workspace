@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "korlon"
+		},
+		{
+			"path": "phobos"
+		}
+	],
+	"settings": {
+		"java.compile.nullAnalysis.mode": "automatic"
+	}
+}

@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  korlon-api:
+    image: korlon
+    build: .
+    ports:
+      - "8081:8081"
+    restart: always
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/accounts_receivable
+      SPRING_DATASOURCE_USERNAME: desarrollo
+      SPRING_DATASOURCE_PASSWORD: desarrollo
+      restart: always

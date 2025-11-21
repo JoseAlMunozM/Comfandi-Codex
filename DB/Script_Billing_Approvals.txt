@@ -1,0 +1,14 @@
+CREATE TABLE billing_approvals (
+    approval_id SERIAL PRIMARY KEY,
+    billing_account_id INT NOT NULL,
+    approval_date TIMESTAMP NOT NULL,
+    email_sent_date TIMESTAMP,
+    FOREIGN KEY (billing_account_id) REFERENCES billing_accounts(billing_account_id) ON DELETE CASCADE
+);
+
+
+COMMENT ON TABLE billing_approvals IS 'Tracks approvals for billing accounts, including email notifications.';
+COMMENT ON COLUMN billing_approvals.approval_id IS 'Unique identifier for each billing approval.';
+COMMENT ON COLUMN billing_approvals.billing_account_id IS 'Reference to the associated billing account.';
+COMMENT ON COLUMN billing_approvals.approval_date IS 'Date when the billing account was approved.';
+COMMENT ON COLUMN billing_approvals.email_sent_date IS 'Date when the approval email was sent.';

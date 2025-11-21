@@ -1,0 +1,14 @@
+CREATE TABLE IF NOT EXISTS countable_data
+(
+    id numeric(20,0) NOT NULL,
+    regional character varying(20),
+    profile character varying(20) ,
+    "group" numeric(1,0),
+    internal_group numeric(1,0),
+    account character varying(20),
+    beneficiary character varying(20),
+    is_cebe boolean,
+    is_account boolean,
+    countable_key numeric(3,0),
+    CONSTRAINT countable_data_pkey PRIMARY KEY (id)
+)

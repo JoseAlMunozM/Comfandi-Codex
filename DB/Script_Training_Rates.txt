@@ -1,0 +1,46 @@
+CREATE TABLE training_rates (
+    id SERIAL PRIMARY KEY, 
+    training_line VARCHAR(255) NOT NULL, 
+    training_process VARCHAR(255) NOT NULL, 
+    hours INT NOT NULL, 
+    certifier VARCHAR(255), 
+    population VARCHAR(255),
+    min_quota INT NOT NULL, 
+    max_quota INT NOT NULL, 
+    modality VARCHAR(100) NOT NULL, 
+    opening_frequency VARCHAR(100), 
+    region VARCHAR(255) NOT NULL, 
+    observation TEXT,
+    creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+    update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP , 
+    tariff_2025 DECIMAL(10,2) NOT NULL 
+);
+
+-- Table comment
+COMMENT ON TABLE training_rates IS 'This table stores information about training tariffs, including details on courses, quotas, modalities, and regional availability.';
+
+-- Column comments
+COMMENT ON COLUMN training_rates.id IS 'Unique identifier for each training rate.';
+COMMENT ON COLUMN training_rates.training_line IS 'Training line or category defining the type of course.';
+COMMENT ON COLUMN training_rates.training_process IS 'Specific training process related to the course.';
+COMMENT ON COLUMN training_rates.hours IS 'Total number of hours required for the training.';
+COMMENT ON COLUMN training_rates.certifier IS 'Name of the entity responsible for certification.';
+COMMENT ON COLUMN training_rates.population IS 'Target audience or population for the training.';
+COMMENT ON COLUMN training_rates.min_quota IS 'Minimum required number of participants for the course to open.';
+COMMENT ON COLUMN training_rates.max_quota IS 'Maximum number of participants allowed in the course.';
+COMMENT ON COLUMN training_rates.modality IS 'Mode of training delivery (e.g., in-person, virtual).';
+COMMENT ON COLUMN training_rates.opening_frequency IS 'How often the course is available for new participants.';
+COMMENT ON COLUMN training_rates.region IS 'Geographical region where the training is offered.';
+COMMENT ON COLUMN training_rates.observation IS 'Additional comments or special considerations.';
+COMMENT ON COLUMN training_rates.tariff_2025 IS 'Training fee applicable for the year 2025.';
+COMMENT ON COLUMN training_rates.creation_date IS 'Timestamp indicating when the record was created.';
+COMMENT ON COLUMN training_rates.update_date IS 'Timestamp indicating when the record was last updated.';
+
+
+
+	
+
+
+
+
+

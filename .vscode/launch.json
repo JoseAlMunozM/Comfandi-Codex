@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-KorlonApplication<korlon>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.comfandi.korlon.KorlonApplication",
+            "projectName": "korlon",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-PhobosApplication<phobos>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.comfandi.phobos.PhobosApplication",
+            "projectName": "phobos",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

@@ -1,0 +1,13 @@
+CREATE TABLE month (
+    id SERIAL PRIMARY KEY, 
+    name VARCHAR(50) NOT NULL,
+    creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+    update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Add comments for the table and its columns
+COMMENT ON TABLE month IS 'Stores information about months.';
+COMMENT ON COLUMN month.id IS 'Unique identifier for the month.';
+COMMENT ON COLUMN month.name IS 'The name of the month (e.g., January, February).';
+COMMENT ON COLUMN month.creation_date IS 'Timestamp indicating when the record was created.';
+COMMENT ON COLUMN month.update_date IS 'Timestamp indicating when the record was last updated.';

@@ -1,0 +1,1 @@
+ALTER TABLE public.billing_account_amortization ADD COLUMN amortization_url TEXT;

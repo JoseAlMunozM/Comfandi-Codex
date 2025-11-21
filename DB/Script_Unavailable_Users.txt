@@ -1,0 +1,16 @@
+CREATE SEQUENCE IF NOT EXISTS unavailable_users_id_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 2147483647
+    CACHE 1;
+
+create table unavailable_users
+(
+	id integer PRIMARY KEY DEFAULT nextval('unavailable_users_id_seq'::regclass),
+	identification_type varchar(5) NOT NULL,
+	name varchar(100) NOT NULL,
+	unavailable_date timestamp without time zone,
+	description varchar(100) NOT NULL
+
+);

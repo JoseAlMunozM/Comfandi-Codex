@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  background-color: #f6f6f6;
+  font-family: "Outfit"; /* Aplica la fuente al cuerpo del sitio */
+}

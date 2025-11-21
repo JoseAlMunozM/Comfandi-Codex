@@ -1,0 +1,13 @@
+CREATE TABLE MODALITY (
+    id SERIAL PRIMARY KEY,  
+    name VARCHAR(255) NOT NULL, 
+    creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  
+    update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP  
+);
+
+-- Adding comments to describe the table and its columns
+COMMENT ON TABLE MODALITY IS 'Table that stores different modalities for courses or programs.';
+COMMENT ON COLUMN MODALITY.id IS 'Primary key, unique identifier for each modality.';
+COMMENT ON COLUMN MODALITY.name IS 'Name of the modality.';
+COMMENT ON COLUMN MODALITY.creation_date IS 'Date when the modality record was created.';
+COMMENT ON COLUMN MODALITY.update_date IS 'Date when the modality record was last updated.';

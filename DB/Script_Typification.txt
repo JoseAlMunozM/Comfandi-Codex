@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS Typification
+(
+    id numeric(5,0) NOT NULL,
+    location VARCHAR(50) ,
+    cebe VARCHAR(10),
+    account VARCHAR(15),
+    assigment VARCHAR(100),
+    type VARCHAR(20),
+    CONSTRAINT pk_typification PRIMARY KEY (id)
+)

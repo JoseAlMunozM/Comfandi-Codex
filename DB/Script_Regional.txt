@@ -1,0 +1,13 @@
+CREATE TABLE regional (
+    id SERIAL PRIMARY KEY, 
+    name VARCHAR(100) NOT NULL, 
+    creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+    update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP  
+);
+
+-- Add comments for the table and its columns
+COMMENT ON TABLE regional IS 'Stores information about different regional entities.';
+COMMENT ON COLUMN regional.id IS 'Unique identifier for the regional entity.';
+COMMENT ON COLUMN regional.name IS 'The name of the regional entity.';
+COMMENT ON COLUMN regional.creation_date IS 'Timestamp indicating when the record was created.';
+COMMENT ON COLUMN regional.update_date IS 'Timestamp indicating when the record was last updated.';

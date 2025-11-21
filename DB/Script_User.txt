@@ -1,0 +1,44 @@
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY, 
+    id_course INT NOT NULL, 
+    id_project INT NOT NULL, 
+    id_regional INT NOT NULL, 
+    id_enrollment INT NOT NULL, 
+    identification_number VARCHAR(50) NOT NULL , 
+    name VARCHAR(100) NOT NULL, 
+    email VARCHAR(150) NOT NULL,
+    status VARCHAR(50) ,
+    course_fee DECIMAL(10,2), 
+    description VARCHAR(150),   
+    cellphone VARCHAR(20), 
+    advance_course DECIMAL(5,2) CHECK (advance_course BETWEEN 0 AND 100), 
+    training_date DATE, 
+    charge_date DATE,
+    creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+    update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP , 
+	
+    CONSTRAINT fk_user_course FOREIGN KEY (id_course) REFERENCES course(id),
+    CONSTRAINT fk_user_project FOREIGN KEY (id_project) REFERENCES project(id),
+    CONSTRAINT fk_user_regional FOREIGN KEY (id_regional) REFERENCES regional(id),
+    CONSTRAINT fk_user_enrollment FOREIGN KEY (id_enrollment) REFERENCES enrollment(id)
+);
+
+-- Add comments for the table and its columns
+COMMENT ON TABLE users IS 'Stores information about users, including their assigned course, project, and regional details.';
+COMMENT ON COLUMN users.id IS 'Unique identifier for the user.';
+COMMENT ON COLUMN users.id_course IS 'Foreign key referencing the course the user is enrolled in.';
+COMMENT ON COLUMN users.id_project IS 'Foreign key referencing the project associated with the user.';
+COMMENT ON COLUMN users.id_regional IS 'Foreign key referencing the regional assignment.';
+COMMENT ON COLUMN users.id_enrollment IS 'Foreign key referencing the enrollment type.';
+COMMENT ON COLUMN users.identification_number IS 'Unique identification number for the user.';
+COMMENT ON COLUMN users.name IS 'Full name of the user.';
+COMMENT ON COLUMN users.email IS 'User’s email address (must be unique).';
+COMMENT ON COLUMN users.cellphone IS 'User’s cellphone number.';
+COMMENT ON COLUMN users.advance_course IS 'Percentage of course progress (0 to 100).';
+COMMENT ON COLUMN users.training_date IS 'Date when the user started training.';
+COMMENT ON COLUMN users.charge_date IS 'Date when the user was assigned a charge.';
+COMMENT ON COLUMN users.creation_date IS 'Timestamp indicating when the record was created.';
+COMMENT ON COLUMN users.update_date IS 'Timestamp indicating when the record was last updated.';
+COMMENT ON COLUMN users.status IS 'Current status of the training rate. ';
+COMMENT ON COLUMN users.course_fee IS 'Monetary value representing the course fee.';
+COMMENT ON COLUMN users.description IS 'Brief description or additional details about the training rate.';

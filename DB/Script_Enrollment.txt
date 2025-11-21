@@ -1,0 +1,15 @@
+CREATE TABLE enrollment (
+    id SERIAL PRIMARY KEY, 
+    code VARCHAR(50) NOT NULL , 
+    name VARCHAR(100) NOT NULL,
+    creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
+);
+
+-- Add comments for the table and its columns
+COMMENT ON TABLE enrollment IS 'Stores information about enrollment records.';
+COMMENT ON COLUMN enrollment.id IS 'Unique identifier for the enrollment record.';
+COMMENT ON COLUMN enrollment.code IS 'Unique code assigned to the enrollment.';
+COMMENT ON COLUMN enrollment.name IS 'The name or description of the enrollment.';
+COMMENT ON COLUMN enrollment.creation_date IS 'Timestamp indicating when the record was created.';
+COMMENT ON COLUMN enrollment.update_date IS 'Timestamp indicating when the record was last updated.';

@@ -1,0 +1,20 @@
+
+CREATE TABLE billing_accounts (
+    billing_account_id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    billing_account_type VARCHAR(50) NOT NULL,
+    billing_account_name VARCHAR(100) NOT NULL,
+    creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    document_word_url TEXT,
+    document_excel_url TEXT,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+COMMENT ON TABLE billing_accounts IS 'Stores billing account details associated with a user.';
+COMMENT ON COLUMN billing_accounts.billing_account_id IS 'Unique identifier for each billing account.';
+COMMENT ON COLUMN billing_accounts.user_id IS 'Reference to the associated user.';
+COMMENT ON COLUMN billing_accounts.billing_account_type IS 'Type of billing account.';
+COMMENT ON COLUMN billing_accounts.billing_account_name IS 'Name of the billing account.';
+COMMENT ON COLUMN billing_accounts.creation_date IS 'Timestamp when the billing account was created.';
+COMMENT ON COLUMN billing_accounts.document_word_url IS 'URL to download the billing account document in Word format.';
+COMMENT ON COLUMN billing_accounts.document_excel_url IS 'URL to download the billing account document in Excel format.';

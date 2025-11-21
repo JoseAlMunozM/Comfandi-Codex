@@ -1,0 +1,45 @@
+CREATE SEQUENCE IF NOT EXISTS workshop_id_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 2147483647
+    CACHE 1;
+
+CREATE TABLE workshop (
+	id integer PRIMARY KEY DEFAULT nextval('workshop_id_seq'::regclass),
+	name varchar(100) NOT NULL,
+	value numeric(12,2) NOT NULL,
+	year integer NOT NULL
+);
+
+
+CREATE SEQUENCE IF NOT EXISTS workshop_users_id_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 2147483647
+    CACHE 1;
+
+
+CREATE TABLE workshop_users (
+	id integer PRIMARY KEY DEFAULT nextval('workshop_users_id_seq'::regclass),
+	id_workshop integer NOT NULL,
+	id_modality integer NOT NULL,
+	id_regional integer NOT NULL,
+	city varchar(100) NOT NULL,
+	area varchar(50) NOT NULL,	
+	idenfitication_number varchar(20) NOT NULL,
+	identification_type varchar(5) NOT NULL,
+	full_name varchar(100) NOT NULL,
+	email varchar(50) NOT NULL,
+	fee_value numeric(10,2),
+	orientation_date DATE NOT NULL,
+	appointment_date DATE NOT NULL,
+	validationDate DATE NOT NULL,
+	appointment boolean,
+	status varchar(20),
+	description varchar(200),		
+	year integer NOT NULL,
+	progress numeric(4,1),
+	FOREIGN KEY (id_workshop) REFERENCES workshop(id) ON DELETE CASCADE	
+);
