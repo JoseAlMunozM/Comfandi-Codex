@@ -75,14 +75,6 @@ public class ExternalServiceClient {
      * con un array "data".
      */
     private List<UserDto> fetchUsuariosFromService(WebClient webClient,String token) {
-        // Map<String, Object> body = Map.of(
-        //     "parametros_consulta", Map.of(
-        //         "fecha_inicio", "2025-08-28",
-        //         "fecha_fin", "2025-09-28",
-        //         "estado_inscripcion", ""
-        //     )
-        // );
-
         Map<String, Object> body = Map.of(
             "parametros_consulta", Map.of(
                 "fecha_inicio", "2025-10-19",

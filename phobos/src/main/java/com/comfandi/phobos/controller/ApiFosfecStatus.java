@@ -40,27 +40,4 @@ public class ApiFosfecStatus {
                     .body("Internal server error: " + e.getMessage());
         }
     }
-
-
-
-    @PostMapping("/appointments/query")
-    public ResponseEntity<?> queryAppointments() {
-        try {
-
-            List<UserFosfecResultDto> users = fosfecStatusService.getUsersWithFosfecStatus();
-
-            if (users == null || users.isEmpty()) {
-                return ResponseEntity.badRequest()
-                        .body("No users available for appointment validation.");
-            }
-
-            Object response = fosfecStatusService.callAppointmentsApi(users);
-
-            return ResponseEntity.ok(response);
-
-        } catch (Exception e) {
-            return ResponseEntity.status(500)
-                    .body("Error calling appointment service: " + e.getMessage());
-        }
-    }
 }

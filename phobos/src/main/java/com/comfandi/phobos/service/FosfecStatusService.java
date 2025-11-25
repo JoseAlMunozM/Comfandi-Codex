@@ -4,12 +4,14 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -19,10 +21,10 @@ import com.comfandi.phobos.entity.ValidationResult;
 import com.comfandi.phobos.repository.CourseValidatedRepository;
 import com.comfandi.phobos.repository.FosfecStatusQueryRepository;
 import com.comfandi.phobos.repository.ValidationResultRepository;
+import com.comfandi.phobos.service.dto.AppointmentQueryInformationResponse;
 import com.comfandi.phobos.service.dto.AppointmentQueryRequest;
 import com.comfandi.phobos.service.dto.UserDto;
 import com.comfandi.phobos.service.dto.UserFosfecResultDto;
-import com.comfandi.phobos.service.dto.AppointmentQueryRequest;
 
 @Service
 public class FosfecStatusService {
@@ -54,6 +56,7 @@ public class FosfecStatusService {
                 ));
 
         List<UserFosfecResultDto> result = new ArrayList<>();
+        Map<String, CourseValidated> courseValidatedByKey = new HashMap<>();
 
         for (UserDto user : externalUsers) {
 
@@ -102,27 +105,41 @@ public class FosfecStatusService {
                     .build();
 
             result.add(dto);
-
-            CourseValidated courseValidated = courseValidatedRepository
+            courseValidatedRepository
                     .findByTipoIdentificacionAndIdentificacion(
                             user.getIdentificationType(),
                             user.getIdentification()
                     )
-                    .orElse(null);
+                    .ifPresent(cv -> courseValidatedByKey.put(key, cv));
+        }
 
+        Map<String, AppointmentQueryInformationResponse> appointmentsByKey = callAppointmentsApi(result)
+                .stream()
+                .collect(Collectors.toMap(
+                        r -> normalizeDocumentType(r.getDocumentAbbreviation()) + "-" + r.getDocument(),
+                        r -> r,
+                        (a, b) -> a
+                ));
+
+        for (UserFosfecResultDto dto : result) {
+            String key = normalizeDocumentType(dto.getIdentificationType()) + "-" + dto.getIdentification();
+            CourseValidated courseValidated = courseValidatedByKey.get(key);
             if (courseValidated == null) {
                 continue;
             }
 
+            AppointmentQueryInformationResponse appointment = appointmentsByKey.get(key);
+
             ValidationResult validation = new ValidationResult();
             validation.setUsuario(courseValidated);
-            validation.setPrograma(courseValidated.getPrograma());
-            validation.setCursoEstandarizado(courseValidated.getProgramaEstandarizado());
-            validation.setFechavalidacion(LocalDate.now());
-            validation.setEstadofinal(estadoFinal);
-            validation.setObservacion(observacion);
+            validation.setPrograma(resolveProgram(appointment, courseValidated));
+            validation.setCursoEstandarizado(resolveCourseStandard(appointment, courseValidated));
+            LocalDate validationDate = parseDate(appointment != null ? appointment.getLastAppointment() : null);
+            validation.setFechavalidacion(validationDate != null ? validationDate : LocalDate.now());
+            validation.setEstadofinal(dto.getEstadoFinal());
+            validation.setObservacion(dto.getObservacion());
             validation.setCutoffdate(LocalDate.now());
-            validation.setDocumentid(Long.valueOf(user.getIdentification()));
+            validation.setDocumentid(parseLong(dto.getIdentification()));
 
             validationResultRepository.save(validation);
         }
@@ -132,7 +149,7 @@ public class FosfecStatusService {
 
     
 
-    public Object callAppointmentsApi(List<UserFosfecResultDto> usuarios) {
+    public List<AppointmentQueryInformationResponse> callAppointmentsApi(List<UserFosfecResultDto> usuarios) {
 
         List<AppointmentQueryRequest> requestBody = mapToAppointmentRequest(usuarios) ;
 
@@ -141,8 +158,9 @@ public class FosfecStatusService {
                 .uri("https://apifomento.subsidioscomfandi.com.co/appointments/query-information")
                 .bodyValue(requestBody)
                 .retrieve()
-                .bodyToMono(Object.class)
-                .block();
+                .bodyToMono(new ParameterizedTypeReference<List<AppointmentQueryInformationResponse>>() {})
+                .blockOptional()
+                .orElse(List.of());
     }
 
 
@@ -174,9 +192,48 @@ public class FosfecStatusService {
     public List<AppointmentQueryRequest> mapToAppointmentRequest(List<UserFosfecResultDto> users) {
         return users.stream()
                 .map(u -> new AppointmentQueryRequest(
-                        u.getIdentificationType(),
+                        normalizeDocumentType(u.getIdentificationType()),
                         u.getIdentification()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    private LocalDate parseDate(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        try {
+            return LocalDate.parse(value, DateTimeFormatter.ISO_DATE);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Long parseLong(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        try {
+            return Long.valueOf(value);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    private String resolveProgram(AppointmentQueryInformationResponse appointment, CourseValidated courseValidated) {
+        if (appointment != null && appointment.getFormation() != null && !appointment.getFormation().isEmpty()) {
+            return appointment.getFormation().get(0);
+        }
+        return courseValidated.getPrograma();
+    }
+
+    private String resolveCourseStandard(AppointmentQueryInformationResponse appointment, CourseValidated courseValidated) {
+        if (appointment != null && appointment.getFormation() != null && appointment.getFormation().size() >= 2) {
+            return appointment.getFormation().get(1);
+        }
+        if (appointment != null && appointment.getFormation() != null && !appointment.getFormation().isEmpty()) {
+            return appointment.getFormation().get(0);
+        }
+        return courseValidated.getProgramaEstandarizado();
     }
 }
