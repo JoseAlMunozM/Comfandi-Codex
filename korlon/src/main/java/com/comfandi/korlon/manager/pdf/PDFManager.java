@@ -2,6 +2,7 @@ package com.comfandi.korlon.manager.pdf;
 
 import java.awt.Color;
 import java.io.*;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -156,7 +157,12 @@ public class PDFManager {
 		List<DatosPlantilla> datosPlantillaList=profiles.getValue()
 				.equals(Profiles.TH_FOSFEC.getValue())?infoDatosPlanilla.generateDatosPLantillaTH(datosPlanilla,typificationEntityList,null,false,portfolioList):infoDatosPlanilla.generateDatosPlanilla(datosPlanilla,typificationEntityList,null);
 		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dataSetMapper.datosPlantillaListToDataSetList(datosPlantillaList));
-		Double total = (Double) datosPlantillaList.stream().mapToDouble(DatosPlantilla::getSum).sum();
+		// Sumar manteniendo el valor entero tal como viene en la data
+		BigDecimal total = datosPlantillaList.stream()
+				.map(DatosPlantilla::getSum)
+				.filter(Objects::nonNull)
+				.map(BigDecimal::valueOf)
+				.reduce(BigDecimal.ZERO, BigDecimal::add);
 		String debeA="";
 		if(profiles.getValue().equals(Profiles.TH_FOSFEC.getValue())){
 			debeA="EL DPTO. FOMENTO EMPRESARIAL	COMPONENTE MAS TALENTO HUMANO";
@@ -181,7 +187,7 @@ public class PDFManager {
 		params.put("cebe","CEBE "+valuePDF.getCebe());
 		params.put("cuentaContable", valuePDF.getAccount());
 		params.put("debeA",debeA);
-		params.put("totalEnLetras", Numbers.convertir(total));
+		params.put("totalEnLetras", Numbers.convertir(total.doubleValue()));
 		params.put("concepto","Prueba concepto");
 		params.put("cuentaContable2","2705950132");
 		params.put("nombreFirma","Lina María Martínez García");

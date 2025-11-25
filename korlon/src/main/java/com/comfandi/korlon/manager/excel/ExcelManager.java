@@ -1,6 +1,7 @@
 package com.comfandi.korlon.manager.excel;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -400,18 +401,28 @@ public class ExcelManager {
         newRow.createCell(7).setCellValue(row.getCorreoElectronico());
         newRow.createCell(8).setCellValue(row.getNombreDelPrograma());
         newRow.createCell(9).setCellValue(row.getModalidad());
-        newRow.createCell(10).setCellValue(row.getValor());
+        setCellNumeric(newRow.createCell(10), toBigDecimal(row.getValor()));
         Optional<PortfolioEntity> portfolio= optPortfolio.stream().filter(x-> x.getId().longValue()==Long.parseLong(row.getPortfolioId())).findFirst();
         if(portfolio.isPresent()){
-            newRow.createCell(11).setCellValue((Double.parseDouble(row.getValor())*portfolio.get().getDownPayment1())/100);
-            newRow.createCell(14).setCellValue(portfolio.get().getDownPayment1());
+            Double valor = safeDouble(row.getValor());
+            Double dp1 = portfolio.get().getDownPayment1();
+            if (valor != null && dp1 != null) {
+                setCellNumeric(newRow.createCell(11), BigDecimal.valueOf((valor * dp1) / 100));
+            }
+            setCellNumeric(newRow.createCell(14), toBigDecimal(dp1));
             if(portfolio.get().getDownPayment2()!=null){
-                newRow.createCell(12).setCellValue((Double.parseDouble(row.getValor())*portfolio.get().getDownPayment2())/100);
-                newRow.createCell(15).setCellValue(portfolio.get().getDownPayment2());
+                Double dp2 = portfolio.get().getDownPayment2();
+                if (valor != null && dp2 != null) {
+                    setCellNumeric(newRow.createCell(12), BigDecimal.valueOf((valor * dp2) / 100));
+                }
+                setCellNumeric(newRow.createCell(15), toBigDecimal(dp2));
             }
             if(portfolio.get().getDownPayment3()!=null){
-                newRow.createCell(13).setCellValue((Double.parseDouble(row.getValor())*portfolio.get().getDownPayment3())/100);
-                newRow.createCell(16).setCellValue(portfolio.get().getDownPayment3());
+                Double dp3 = portfolio.get().getDownPayment3();
+                if (valor != null && dp3 != null) {
+                    setCellNumeric(newRow.createCell(13), BigDecimal.valueOf((valor * dp3) / 100));
+                }
+                setCellNumeric(newRow.createCell(16), toBigDecimal(dp3));
             }
         }
         newRow.createCell(17).setCellValue(row.getRegionalCobro());
@@ -461,7 +472,7 @@ public class ExcelManager {
         newRow.createCell(7).setCellValue(row.getCorreoElectronico());
         newRow.createCell(8).setCellValue(row.getNombreDelPrograma());
         newRow.createCell(9).setCellValue(row.getModalidad());
-        newRow.createCell(10).setCellValue(row.getValor());
+        setCellNumeric(newRow.createCell(10), toBigDecimal(row.getValor()));
         newRow.createCell(11).setCellValue(row.getRegionalCobro());
         newRow.createCell(12).setCellValue(row.getRegionalDomicilio());
         newRow.createCell(13).setCellValue(row.getObservacionBeneficiarioCotizante());
@@ -500,19 +511,19 @@ public class ExcelManager {
         newRow.createCell(0).setCellValue(dataRow.getRegional());
         newRow.createCell(1).setCellValue(dataRow.getProgram());
         newRow.createCell(2).setCellValue(dataRow.getMode());
-        newRow.createCell(3).setCellValue(dataRow.getSum());
+        setCellNumeric(newRow.createCell(3), toBigDecimal(dataRow.getSum()));
         newRow.createCell(4).setCellValue(dataRow.getProgramResume());
         newRow.createCell(5).setCellValue(dataRow.getResume());
-        newRow.createCell(6).setCellValue(dataRow.getCant());
+        setCellNumeric(newRow.createCell(6), toBigDecimal(dataRow.getCant()));
         newRow.createCell(7).setCellValue(dataRow.getAccount());
         newRow.createCell(8).setCellValue(dataRow.getCebe());
         newRow.createCell(9).setCellValue(dataRow.getTextRegistry());
         newRow.createCell(10).setCellValue(dataRow.getAssignation());
-        newRow.createCell(11).setCellValue(dataRow.getTextLength());
+        setCellNumeric(newRow.createCell(11), toBigDecimal(dataRow.getTextLength()));
         if(amortizable) {
-            newRow.createCell(12).setCellValue(dataRow.getDownPayment1() == null ? "" : dataRow.getDownPayment1().toString());
-            newRow.createCell(13).setCellValue(dataRow.getDownPayment2() == null ? "" : dataRow.getDownPayment2().toString());
-            newRow.createCell(14).setCellValue(dataRow.getDownPayment3() == null ? "" : dataRow.getDownPayment3().toString());
+            setCellNumeric(newRow.createCell(12), toBigDecimal(dataRow.getDownPayment1()));
+            setCellNumeric(newRow.createCell(13), toBigDecimal(dataRow.getDownPayment2()));
+            setCellNumeric(newRow.createCell(14), toBigDecimal(dataRow.getDownPayment3()));
         }
 
         return newRow;
@@ -526,8 +537,8 @@ public class ExcelManager {
 
         newRow.createCell(0).setCellValue(TOTAL_LABEL);
         newRow.createCell(1).setCellValue("");
-        newRow.createCell(3).setCellValue(sumaValor);
-        newRow.createCell(6).setCellValue(sumaCedula);
+        setCellNumeric(newRow.createCell(3), toBigDecimal(sumaValor));
+        setCellNumeric(newRow.createCell(6), toBigDecimal(sumaCedula));
 
 
 
@@ -558,6 +569,48 @@ public class ExcelManager {
         valor.setCellValue(infoValidacionPlantillaRow.getSumValue().toString());
         valor.setCellStyle(style);
         return newRow;
+    }
+
+    private BigDecimal toBigDecimal(Object value) {
+        if (value == null) {
+            return null;
+        }
+        try {
+            if (value instanceof BigDecimal bd) {
+                return bd;
+            }
+            if (value instanceof Number num) {
+                if (num instanceof Long || num instanceof Integer) {
+                    return BigDecimal.valueOf(num.longValue());
+                }
+                return BigDecimal.valueOf(num.doubleValue());
+            }
+            String raw = value.toString().trim();
+            if (raw.isEmpty()) {
+                return null;
+            }
+            // replace comma as decimal separator if needed
+            raw = raw.replace(",", "");
+            return new BigDecimal(raw);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private void setCellNumeric(XSSFCell cell, BigDecimal value) {
+        if (value == null) {
+            cell.setBlank();
+            return;
+        }
+        cell.setCellValue(value.toPlainString());
+    }
+
+    private Double safeDouble(String value) {
+        try {
+            return value == null ? null : Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
     public DatosPlantillaHeader generateDatosPlantillaHeaderAmortizacion(ArrayList<ApiInformationDatabase> rows,BillingAccountEntity ba){
         String conceptValue="CXC %d-2 CAPAC";
@@ -602,14 +655,14 @@ public class ExcelManager {
 
             // HEADER INFO
             XSSFRow conseptoRow = templateSheet.getRow(CONSEPTO_ROW);
-            conseptoRow.createCell(CONSEPTO_COL).setCellValue(header.getConcept());//todo: revisar como ubicar esto
+            conseptoRow.createCell(CONSEPTO_COL).setCellValue(header.getConcept());
             conseptoRow = templateSheet.getRow(CONSEPTO_ROW + 1);
-            conseptoRow.createCell(CONSEPTO_COL).setCellValue(header.getConceptObject());//todo: revisar como ubicar esto
+            conseptoRow.createCell(CONSEPTO_COL).setCellValue(header.getConceptObject());
             conseptoRow = templateSheet.getRow(CONSEPTO_ROW + 2);
-            conseptoRow.createCell(CONSEPTO_COL).setCellValue(header.getProgram());//todo: revisar como ubicar esto
+            conseptoRow.createCell(CONSEPTO_COL).setCellValue(header.getProgram());
             if(amortizable){
                 conseptoRow = templateSheet.getRow(CONSEPTO_ROW + 3);
-                conseptoRow.createCell(CONSEPTO_COL).setCellValue(header.getEtapa());//todo: revisar como ubicar esto
+                conseptoRow.createCell(CONSEPTO_COL).setCellValue(header.getEtapa());
             }
             conseptoRow = templateSheet.getRow(CONSEPTO_ROW + 4);
             conseptoRow.createCell(CONSEPTO_COL).setCellValue(header.getDate());
@@ -621,7 +674,7 @@ public class ExcelManager {
                 tableRowIndex++;
             }
             XSSFRow newRow = templateSheet.createRow(tableRowIndex);
-            this.addInfoPlanillaTotalRow(newRow, (Double) dataPlantilla.stream().mapToDouble(DatosPlantilla::getSum).sum(),  dataPlantilla.stream().mapToInt(k-> k.getCant().intValue() ).sum(),profile);
+            this.addInfoPlanillaTotalRow(newRow, dataPlantilla.stream().mapToDouble(DatosPlantilla::getSum).sum(),  dataPlantilla.stream().mapToInt(k-> k.getCant().intValue() ).sum(),profile);
 
         } catch (Exception e) {
 
